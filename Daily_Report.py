@@ -59,31 +59,31 @@ index_data = pd.DataFrame(fetch.get_index_all()).set_index("Dates")
 panel      = index_data.loc[max(index_data.index)]
 inv_df     = pd.DataFrame(fetch.get_historical_inventory()).set_index("Dates")
 stock_data = stock.get_stock_sector_index(start,end,True,{},[],Relative_Switch)
-# Plot stock industry tracking
-in_df      = ind_tracking.get_industry_data(dt.datetime(2019, 1, 1).date(),end,True)
 
-fig, axes  = plt.subplots(nrows=4, ncols=3,figsize=(12,16))
-i,j = 0,0
-for sector,vals in col_names.items():
-    for name in vals:
-        axes[i,j].plot(in_df[name],label = name)
-        axes[i,j].xaxis.set_major_formatter(myFmt)
-        axes[i,j].legend()
-    axes[i,j].title.set_text(sector)
-    j+=1
-    if j == 3:
-        i += 1
-        j = 0
-fig.autofmt_xdate()
-plt.tight_layout()
-plt.show()
-plt.close(fig)
+# Plot stock industry tracking
+#in_df      = ind_tracking.get_industry_data(dt.datetime(2019, 1, 1).date(),end,True)
+#
+#fig, axes  = plt.subplots(nrows=4, ncols=3,figsize=(12,16))
+#i,j = 0,0
+#for sector,vals in col_names.items():
+#    for name in vals:
+#        axes[i,j].plot(in_df[name],label = name)
+#        axes[i,j].xaxis.set_major_formatter(myFmt)
+#        axes[i,j].legend()
+#    axes[i,j].title.set_text(sector)
+#    j+=1
+#    if j == 3:
+#        i += 1
+#        j = 0
+#fig.autofmt_xdate()
+#plt.tight_layout()
+#plt.show()
+#plt.close(fig)
 
 # Plot commodity sector products comparison
 fig, axes  = plt.subplots(nrows=3, ncols=2,figsize=(12,16))
 i,j = 0,0
-start_compare = max(index_data.index)-dt.timedelta(days=120)
-Commpare_Plot = index_data.loc[start_compare:]
+Commpare_Plot = index_data.loc[dt.datetime(2019, 1, 1).date():]
 for sector,names in secotrs.items():
     for nn in names:
         if sector == "Agri" and nn in ("CS","JD","AP"):
@@ -101,7 +101,7 @@ for sector,names in secotrs.items():
         i += 1
         
 # Plot commodity-related stock industry tracking
-stock_tracking.draw_product_figure(dt.datetime(2019, 1, 1).date(),end,Relative_Switch)
+stock_tracking.draw_product_figure(dt.datetime(2016, 1, 1).date(),end,Relative_Switch)
 
 # Draw market panel price curves for different sector
 fig, axes  = plt.subplots(nrows=3, ncols=2,figsize=(12,16))
