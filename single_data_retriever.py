@@ -43,7 +43,7 @@ end = dt.date.today()
 Save_df = True
 N = 180
 frequency = "D"
-target = ["TA","PTA"]
+target = ["ZN","ZN"]
 commodity_name = target[0]
 stock_name = target[1]
 Relative_Switch = False
@@ -74,6 +74,9 @@ market = market.join(currency_data,how="left").fillna(method="ffill")
 # Probability of upside frequency
 P_matrix = reports.cal_stat_analyze(market,stock_name)
 print(P_matrix)
+responce_start = end-dt.timedelta(days = 90)
+responce_tb = reports.cal_responce_tb(market,stock_name,responce_start)
+print(responce_tb)
 
 fig = reports.single_stock_analyze(commodity_name, stock_name, market, N)
 
