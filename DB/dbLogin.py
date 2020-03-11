@@ -6,9 +6,9 @@ This is now to create DB login info; subject to change later on
 '''
 def initialDBLogin( schema_name ):
     
-    hostip  = '104.196.131.46'
+    hostip  = '127.0.0.1'
     dbname  = schema_name
-    pwd     = 'advocate'
+    pwd     = 'dsl911023'
     userid  = 'root'
     dblogin = { 
                 'ip':hostip, 
