@@ -50,7 +50,7 @@ Relative_Switch = False
 # Commodity index data
 index_data = pd.DataFrame(fetch.get_index_all()).set_index("Dates")
 # 10Y bond data
-bond_index = index_data[index_data["name"]=="T"][start:]
+bond_index = index_data[index_data["name"]=="T"][start:end]
 bond_index["bond_price"] = 0.5*(bond_index["open"]+bond_index["close"])
 # Commodity inventry data
 inv_df = pd.DataFrame(fetch.get_historical_inventory()).set_index("Dates")
@@ -61,12 +61,12 @@ stock_data = stock_data.rename(columns={stock_name: stock_name+"_Stock"})
 currency_data = pd.DataFrame(fetch.get_histroical_ccy(start,end)).set_index("Dates")
 currency_data = currency_data[["USD_Index","CNYUSD","JPYUSD","WTI"]]
 # Get market data
-market = index_data[index_data["name"]==commodity_name][start:]
+market = index_data[index_data["name"]==commodity_name][start:end]
 market["VOL/OPI"] = market["volume"]/market["opi"]
 market["mid_price"] = 0.5*(market["open"]+market["close"])
 market = market[["mid_price","opi","volume","r1","VOL/OPI"]]
 # Get inventory data
-inventory = inv_df.loc[inv_df["Product"].str.upper()==commodity_name][start:]["INV"]
+inventory = inv_df.loc[inv_df["Product"].str.upper()==commodity_name][start:end]["INV"]
 market = market.join(bond_index["bond_price"],how="left").fillna(method="bfill")
 market = market.join(inventory,how="left").fillna(method="ffill")
 market = market.join(stock_data,how="left").fillna(method="bfill")

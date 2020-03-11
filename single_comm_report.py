@@ -17,11 +17,11 @@ def cal_responce_tb(market,stock_name,responce_start):
     ans_bk = []
     pct_market = market.pct_change()*100
     for target in ["bond_price",stock_name+"_Stock","USD_Index","CNYUSD","JPYUSD","WTI"]:
-        std_99 = pct_market[target].std()*2.33
-        temp = pct_market[["mid_price",target]].loc[abs(pct_market[target])>=std_99]
+        std_95 = pct_market[target].std()*1.65
+        temp = pct_market[["mid_price",target]].loc[abs(pct_market[target])>=std_95]
         temp = temp.loc[responce_start:]
-        ans_bk += [{"Dates":ele[0],"price_chg":ele[1],"driver_chg":ele[2],"driver":target} for ele in temp.to_records()]
-    return pd.DataFrame(ans_bk)[["Dates","price_chg","driver","driver_chg"]]
+        ans_bk += [{"Dates":ele[0],"price_chg":ele[1],"driver_chg":ele[2],"driver":target,"responce_ratio":ele[1]/ele[2]} for ele in temp.to_records()]
+    return pd.DataFrame(ans_bk)[["Dates","price_chg","driver","driver_chg","responce_ratio"]]
 def cal_stat_analyze(market,stock_name):
     # Calculate statistics 
     frequency = "M"
