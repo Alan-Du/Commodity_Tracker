@@ -17,7 +17,7 @@ import matplotlib.dates as mdates
 pd.options.mode.chained_assignment = None  # default='warn'
 secs = 1
 start = dt.datetime(2016, 1, 1).date()
-end = dt.date.today()
+end = dt.date.today()-dt.timedelta(days = 1)
 myFmt = mdates.DateFormatter('%y/%m')
 col_names = { "Material":["Chemicals","Metals","Paper","Steel","Architecture"],
               "Discretionary":["Cars","Cloth","Media","Home_Appliance"],
@@ -56,7 +56,7 @@ secotrs = {
 Relative_Switch = True
 # Data Preparition
 index_data = pd.DataFrame(fetch.get_index_all()).set_index("Dates")
-panel      = index_data.loc[max(index_data.index)]
+panel      = index_data.loc[end]
 inv_df     = pd.DataFrame(fetch.get_historical_inventory()).set_index("Dates")
 stock_data = stock.get_stock_sector_index(start,end,True,{},[],Relative_Switch)
 
