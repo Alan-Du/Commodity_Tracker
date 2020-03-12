@@ -13,15 +13,15 @@ def cal_responce_tb(market,stock_name,responce_start):
     # column names = "mid_price","opi","volume","r1"
     #               "VOL/OPI","bond_price","XX_Stock",
     #               "USD_Index","CNYUSD","JPYUSD","WTI"
-    # Using 2.33 std represents for 99% probability 1D
+    # Using 2.33 std represents for 95% probability 1D
     ans_bk = []
     pct_market = market.pct_change()*100
     for target in ["bond_price",stock_name+"_Stock","USD_Index","CNYUSD","JPYUSD","WTI"]:
-        std_99 = pct_market[target].std()*2.33
-        temp = pct_market[["mid_price",target]].loc[abs(pct_market[target])>=std_99]
+        std_95 = pct_market[target].std()*1.65
+        temp = pct_market[["mid_price",target]].loc[abs(pct_market[target])>=std_95]
         temp = temp.loc[responce_start:]
-        ans_bk += [{"Dates":ele[0],"price_chg":ele[1],"driver_chg":ele[2],"driver":target} for ele in temp.to_records()]
-    return pd.DataFrame(ans_bk)[["Dates","price_chg","driver","driver_chg"]]
+        ans_bk += [{"Dates":ele[0],"price_chg":ele[1],"driver_chg":ele[2],"driver":target,"Responce_Ratio":ele[1]/ele[2]} for ele in temp.to_records()]
+    return pd.DataFrame(ans_bk)[["Dates","price_chg","driver","driver_chg","Responce_Ratio"]]
 def cal_stat_analyze(market,stock_name):
     # Calculate statistics 
     frequency = "M"
