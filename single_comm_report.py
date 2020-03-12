@@ -22,6 +22,7 @@ def cal_responce_tb(market,stock_name,responce_start):
         temp = temp.loc[responce_start:]
         ans_bk += [{"Dates":ele[0],"price_chg":ele[1],"driver_chg":ele[2],"driver":target,"Responce_Ratio":ele[1]/ele[2]} for ele in temp.to_records()]
     return pd.DataFrame(ans_bk)[["Dates","price_chg","driver","driver_chg","Responce_Ratio"]]
+
 def cal_stat_analyze(market,stock_name):
     # Calculate statistics 
     frequency = "M"
