@@ -30,12 +30,13 @@ product_name = ["ag","au","cu","al","zn","pb","ni","sn",
                 "a","m","RM","y","OI","p","SR","CF","jd","cs","c","AP","UR",
                 "IC","IF","IH","T","TF","TS",
                 ]
-N = 2 # Back looking download trading days
+N = 1 # Back looking download trading days
 cur_date = dt.datetime.today()
 sdate = cur_date - dt.timedelta(days=N)
 """ Fetch currency information
 """
 fetch.update_ccy_price(fetch.get_ccy_price(sdate,cur_date))
+
 """ Update market information
 """
 sdate = sdate.strftime('%Y-%m-%d')

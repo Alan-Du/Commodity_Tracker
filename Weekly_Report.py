@@ -58,7 +58,7 @@ MKT = market_mgm.MKT_Manager()
     Both files used in weekly report
 """
 data_index = pd.DataFrame(fetch.get_index_all()).set_index("Dates")
-data_panel = pd.DataFrame(fetch.get_panel_data())
+data_panel = pd.DataFrame(fetch.get_panel_data(end))
 sector_overview, panel, com_li = MKT.gen_market_index_v2( start, end, data_index, data_panel )
 # Stock index
 df_stock = SS.get_stock_sector_index(start,end,True,sector_weights_dict,col_order)

@@ -36,9 +36,9 @@ def get_historical_all( start = "", end = "" ):
                          sql_string, )
     return data
 
-def get_panel_data():
+def get_panel_data(end):
     # Get all historical price for weekly report
-    sql_string = "Select * from market where Dates = (select MAX(Dates) from market)"
+    sql_string = "Select * from market where Dates = \'"+str(end)+"\'"
     schema_name = "commodity"
     data = db.dbExecute( schema_name, 
                          sql_string, )
