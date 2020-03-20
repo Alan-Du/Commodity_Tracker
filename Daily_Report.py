@@ -61,24 +61,24 @@ inv_df     = pd.DataFrame(fetch.get_historical_inventory()).set_index("Dates")
 stock_data = stock.get_stock_sector_index(start,end,True,{},[],Relative_Switch)
 
 # Plot stock industry tracking
-#in_df      = ind_tracking.get_industry_data(dt.datetime(2019, 1, 1).date(),end,True)
-#
-#fig, axes  = plt.subplots(nrows=4, ncols=3,figsize=(12,16))
-#i,j = 0,0
-#for sector,vals in col_names.items():
-#    for name in vals:
-#        axes[i,j].plot(in_df[name],label = name)
-#        axes[i,j].xaxis.set_major_formatter(myFmt)
-#        axes[i,j].legend()
-#    axes[i,j].title.set_text(sector)
-#    j+=1
-#    if j == 3:
-#        i += 1
-#        j = 0
-#fig.autofmt_xdate()
-#plt.tight_layout()
-#plt.show()
-#plt.close(fig)
+in_df      = ind_tracking.get_industry_data(dt.datetime(2019, 1, 1).date(),end,True)
+
+fig, axes  = plt.subplots(nrows=4, ncols=3,figsize=(12,16))
+i,j = 0,0
+for sector,vals in col_names.items():
+    for name in vals:
+        axes[i,j].plot(in_df[name],label = name)
+        axes[i,j].xaxis.set_major_formatter(myFmt)
+        axes[i,j].legend()
+    axes[i,j].title.set_text(sector)
+    j+=1
+    if j == 3:
+        i += 1
+        j = 0
+fig.autofmt_xdate()
+plt.tight_layout()
+plt.show()
+plt.close(fig)
 
 # Plot commodity sector products comparison
 fig, axes  = plt.subplots(nrows=3, ncols=2,figsize=(12,16))
@@ -108,6 +108,9 @@ fig, axes  = plt.subplots(nrows=3, ncols=2,figsize=(12,16))
 i,j = 0,0
 for sector,names in secotrs.items():
     for nn in names:
+        if sector == "Agri" and nn in ("JD","AP"):
+            # Skip some Agri product
+            continue
         r1 = panel[panel["name"]==nn]["r1"]
         r2 = panel[panel["name"]==nn]["r2"]
         x = [0,1,2]
@@ -145,7 +148,7 @@ for code in code_map:
     axes[0,1].hist(market["VOL/OPI"],bins=50,color='C0', label="VOL/OPI")
     axes[0,1].axvline(market["VOL/OPI"][-1], color='k', linestyle='dashed', linewidth=3)
     bottom, top = axes[0,1].get_ylim()
-    axes[0,1].text(market["VOL/OPI"][-1]*1.1, top*0.9, 'Current:{:.1},\nPct:{:.1%}'.format(market["VOL/OPI"][-1],pct_rank))
+    axes[0,1].text(market["VOL/OPI"][-1], top*0.9, 'Current:{:.1},\nPct:{:.1%}'.format(market["VOL/OPI"][-1],pct_rank))
     
     # Plot two: Market structure (RYs)
     axes[1,0].plot(market["close"],color='C0', label=commodity_name)

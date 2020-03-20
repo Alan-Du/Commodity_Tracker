@@ -12,7 +12,7 @@ Output: Formatted dataframe with:
 Commodity code maps see below:
 code_map = 
     [["IF","Shanghai"],["IH","Shanghai"],["IC","Shanghai"],
-     ["T","DIVIDENS"], 
+     ["T","DIVIDENS"],
      ["AU","AU"],["AG","AU"],
      ["CU","CU"],["AL","AL"],["ZN","ZN"],
      ["PB","PB"],["NI","NI"],["SN","SN"],
@@ -31,7 +31,7 @@ code_map =
 """
 import DB.fetch as fetch
 import stock_currency.stock_sector as stock
-import single_comm_report as reports
+import single_comm_helper as rep_helper
 
 import pandas as pd 
 import datetime as dt
@@ -43,7 +43,7 @@ end = dt.date.today()
 Save_df = True
 N = 180
 frequency = "D"
-target = ["AL","AL"]
+target = ["ZN","ZN"]
 commodity_name = target[0]
 stock_name = target[1]
 Relative_Switch = False
@@ -72,13 +72,13 @@ market = market.join(inventory,how="left").fillna(method="ffill")
 market = market.join(stock_data,how="left").fillna(method="bfill")
 market = market.join(currency_data,how="left").fillna(method="ffill")
 # Probability of upside frequency
-P_matrix = reports.cal_stat_analyze(market,stock_name)
+P_matrix = rep_helper.cal_stat_analyze(market,stock_name)
 print(P_matrix)
 responce_start = end-dt.timedelta(days = 90)
-responce_tb = reports.cal_responce_tb(market,stock_name,responce_start)
+responce_tb = rep_helper.cal_responce_tb(market,stock_name,responce_start)
 print(responce_tb)
 
-fig = reports.single_stock_analyze(commodity_name, stock_name, market, N)
+fig = rep_helper.single_stock_analyze(commodity_name, stock_name, market, N)
 
 # Turn on if want to save the data frame
 if Save_df:
