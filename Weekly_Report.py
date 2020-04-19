@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import Market.Market_Manager as market_mgm
 """ Adjust product_name when there is more product
 """
-end = datetime.today().date()- timedelta(days=1)
+end = datetime.today().date()- timedelta(days=0)
 start = end- timedelta(days=120)
 
 name_li = [ ['AG','AU'],['AU','AU'],
@@ -62,7 +62,6 @@ data_panel = pd.DataFrame(fetch.get_panel_data(end))
 sector_overview, panel, com_li = MKT.gen_market_index_v2( start, end, data_index, data_panel )
 # Stock index
 df_stock = SS.get_stock_sector_index(start,end,True,sector_weights_dict,col_order)
-
 currency_df,ccy_li = GC.gen_weekly_ccy_df(start,end)
 currency_df = currency_df.join(df_stock ,how ="right")[ccy_li]
 currency_df = currency_df.fillna(method = "backfill")[ccy_li]

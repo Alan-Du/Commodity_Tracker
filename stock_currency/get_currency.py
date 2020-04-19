@@ -12,7 +12,8 @@ def gen_weekly_ccy_df( start,end ):
                    "CNYUSD","HKDUSD","TWDUSD",
                    "KRWUSD","THBUSD","SGDUSD","MYRUSD",
                    "BRLUSD","INRUSD",
-                   "CNY_raw","JPY_raw"
+                   "CNY_raw","JPY_raw",
+                   "WTI"
                   ]
     currency_df = pd.DataFrame(get_histroical_ccy(start,end)).set_index("Dates")
     temp = currency_df[["JPYUSD","CNYUSD"]]

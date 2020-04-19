@@ -22,6 +22,7 @@ def cal_responce_tb(market,stock_name,responce_start):
         temp = temp.loc[responce_start:]
         ans_bk += [{"Dates":ele[0],"price_chg":ele[1],"driver_chg":ele[2],"driver":target,"responce_ratio":ele[1]/ele[2]} for ele in temp.to_records()]
     return pd.DataFrame(ans_bk)[["Dates","price_chg","driver","driver_chg","responce_ratio"]]
+
 def cal_stat_analyze(market,stock_name):
     # Calculate statistics 
     frequency = "M"
@@ -46,7 +47,7 @@ def single_stock_analyze( comm_name, stock_name, market, N ):
     #          monthly up probability matrix, 
     myFmt = mdates.DateFormatter('%y/%m')
     # Open a blank figure
-    fig, axes = plt.subplots(nrows=9, ncols=2,figsize=(12,30))
+    fig, axes = plt.subplots(nrows=11, ncols=2,figsize=(12,36))
     # Plot one: Market information
     axes[0,0].plot(market["mid_price"],color='C0', label=comm_name)
     ax2 = axes[0,0].twinx()
@@ -70,15 +71,18 @@ def single_stock_analyze( comm_name, stock_name, market, N ):
     # Plot three: Stock compare
     axes[3,0].plot(market["mid_price"],color='C0', label=comm_name)
     ax2 = axes[3,0].twinx()
-    ax2.plot(market[stock_name+"_Stock"],color='C1',label=stock_name+"_Stock")
+    col_i = 1
+    for tt in stock_name:
+        ax2.plot(market[tt],color='C'+str(col_i),label = tt)
+        col_i += 1
     axes[3,0].xaxis.set_major_formatter(myFmt)
     ax2.legend()
     # Plot five: Stock rolling correlation
     comm_pct = market["mid_price"].sort_index().pct_change()
     df = pd.DataFrame(comm_pct)
-    stock_pct = market[stock_name+"_Stock"].sort_index().pct_change()
+    stock_pct = market[stock_name].mean(axis = 1).sort_index().pct_change().rename("stock_pct")
     df = df.join(stock_pct,how="outer").fillna(method="bfill")
-    roll_corr = df["mid_price"].rolling(N).corr(df[stock_name+"_Stock"]).fillna(0)
+    roll_corr = df["mid_price"].rolling(N).corr(df["stock_pct"]).fillna(0)
     axes[3,1].plot(market["mid_price"],color='C0', label=comm_name)
     ax2 = axes[3,1].twinx()
     ax2.bar(roll_corr.index,roll_corr,alpha=0.3,width=3,color='C2',label="Rolling_Corr")
@@ -194,6 +198,37 @@ def single_stock_analyze( comm_name, stock_name, market, N ):
     ax2.bar(roll_corr.index,roll_corr,alpha=0.3,width=3,color='C2',label="Rolling_Corr")
     axes[8,1].xaxis.set_major_formatter(myFmt)
     ax2.legend()
+    
+    # Plot: Market structure (RY2s)
+    axes[9,0].plot(market["mid_price"],color='C0', label=comm_name)
+    ax2 = axes[9,0].twinx()
+    ax2.bar(market.index,market["r2"],alpha=0.5,width=3,color='C4', label="RollYield_2")
+    ax2.plot(market["r2"].rolling(window = 50).std(),color='C2', alpha=0.5, label="std(RY)")
+    axes[9,0].xaxis.set_major_formatter(myFmt)
+    ax2.legend()
+    # Hist one: Distribution of RollYield
+    R2 = market["r2"].dropna()
+    pct_rank = R2.sort_values().values.searchsorted(R2[-1])/len(R2)
+    axes[9,1].hist(R2,bins=50,color='C4',alpha=0.65)
+    axes[9,1].axvline(R2[-1], color='k', linestyle='dashed', linewidth=3)
+    bottom, top = axes[9,1].get_ylim()
+    axes[9,1].text(R2[-1]*1.1, top*0.9, 'Current:{:.0%},\nPct:{:.1%}'.format(R2[-1],pct_rank))
+    
+    # Plot: Market structure (RY2s)
+    market["r3"] = (1+market["r1"])*(1+market["r2"])-1
+    axes[10,0].plot(market["mid_price"],color='C0', label=comm_name)
+    ax2 = axes[10,0].twinx()
+    ax2.bar(market.index,market["r3"],alpha=0.5,width=3,color='C4', label="RollYield_all")
+    ax2.plot(market["r3"].rolling(window = 50).std(),color='C2', alpha=0.5, label="std(RY)")
+    axes[10,0].xaxis.set_major_formatter(myFmt)
+    ax2.legend()
+    # Hist one: Distribution of RollYield
+    R3 = market["r3"].dropna()
+    pct_rank = R3.sort_values().values.searchsorted(R3[-1])/len(R3)
+    axes[10,1].hist(R3,bins=50,color='C4',alpha=0.65)
+    axes[10,1].axvline(R3[-1], color='k', linestyle='dashed', linewidth=3)
+    bottom, top = axes[10,1].get_ylim()
+    axes[10,1].text(R3[-1]*1.1, top*0.9, 'Current:{:.0%},\nPct:{:.1%}'.format(R3[-1],pct_rank))
     
     fig.autofmt_xdate()
     plt.tight_layout()

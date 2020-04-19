@@ -15,7 +15,7 @@ from matplotlib.dates import DateFormatter
 def draw_product_figure(start,end, relative=False):
     myFmt = DateFormatter("%y-%m") # Date formatter
     
-    fig0, axes = plt.subplots(nrows=2, ncols=3,figsize=(12,8))
+    fig0, axes = plt.subplots(nrows=2, ncols=3,figsize=(12,10))
     df = helper.get_industry_index(start,end,P_d.COPPER,relative)
     for name in P_d.COPPER.keys():
         if name != "ShangHai_Index":
@@ -66,7 +66,7 @@ def draw_product_figure(start,end, relative=False):
     axes[1,2].legend()
     fig0.tight_layout()
     
-    fig1, axes = plt.subplots(nrows=2, ncols=2,figsize=(8,8))
+    fig1, axes = plt.subplots(nrows=2, ncols=2,figsize=(10,10))
     
     df = helper.get_industry_index(start,end,P_d.ORE,relative)
     for name in P_d.ORE.keys():
@@ -103,7 +103,7 @@ def draw_product_figure(start,end, relative=False):
     fig1.tight_layout()
     
     
-    fig2, axes = plt.subplots(nrows=4, ncols=2,figsize=(8,12))
+    fig2, axes = plt.subplots(nrows=4, ncols=2,figsize=(12,16))
     
     df = helper.get_industry_index(start,end,P_d.PTA,relative)
     for name in P_d.PTA.keys():
@@ -164,7 +164,7 @@ def draw_product_figure(start,end, relative=False):
     fig2.tight_layout()
     
     
-    fig3, axes = plt.subplots(nrows=2, ncols=2,figsize=(8,8))
+    fig3, axes = plt.subplots(nrows=2, ncols=2,figsize=(12,12))
     
     df = helper.get_industry_index(start,end,P_d.SUGAR,relative)
     for name in P_d.SUGAR.keys():

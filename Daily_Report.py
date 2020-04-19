@@ -17,7 +17,7 @@ import matplotlib.dates as mdates
 pd.options.mode.chained_assignment = None  # default='warn'
 secs = 1
 start = dt.datetime(2016, 1, 1).date()
-end = dt.date.today()-dt.timedelta(days = 1)
+end = dt.date.today()-dt.timedelta(days = 3)
 myFmt = mdates.DateFormatter('%y/%m')
 col_names = { "Material":["Chemicals","Metals","Paper","Steel","Architecture"],
               "Discretionary":["Cars","Cloth","Media","Home_Appliance"],
@@ -33,7 +33,7 @@ col_names = { "Material":["Chemicals","Metals","Paper","Steel","Architecture"],
               "Dividend":["Dividends"],
              }
 code_map = [ ["IF","Shanghai"],["IH","Shanghai"],["IC","Shanghai"],
-             ["T","DIVIDENS"], 
+             ["T","DIVIDENS"],
              ["AU","AU"],["AG","AU"],
              ["CU","CU"],["AL","AL"],["ZN","ZN"],
              ["PB","PB"],["SN","SN"],["NI","NI"],
@@ -49,7 +49,7 @@ secotrs = {
         "Stock":["IF","IH","IC"],
         "Pre-Matels":["AU","AG"],
         "Matels":["CU","AL","ZN","PB","SN","NI"],
-        "Black":["I","RB","HC","ZC","JM","J"],
+        "Black":["I","RB","HC","ZC","JM","J","FG"],
         "Chem":["SC","TA","PVC","PP","PE","RU","MA","BU"],
         "Agri":["A","M","RM","Y","OI","P","SR","CF","C","CS","JD","AP"],
         }
@@ -205,5 +205,3 @@ for code in code_map:
     plt.suptitle(commodity_name.upper()+"_MarketReview", fontsize=16,y=1.01)
     plt.show()
     plt.close(fig)
-
-    

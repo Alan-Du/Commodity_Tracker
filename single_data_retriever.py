@@ -40,12 +40,10 @@ myFmt = mdates.DateFormatter('%y/%m')
 # Date format setting
 start = dt.datetime(2016, 1, 1).date()
 end = dt.date.today()
-Save_df = True
+Save_df = False
 N = 180
 frequency = "D"
-target = ["ZN","ZN"]
-commodity_name = target[0]
-stock_name = target[1]
+commodity_name = "TA"
 Relative_Switch = False
 # Commodity index data
 index_data = pd.DataFrame(fetch.get_index_all()).set_index("Dates")
@@ -55,8 +53,10 @@ bond_index["bond_price"] = 0.5*(bond_index["open"]+bond_index["close"])
 # Commodity inventry data
 inv_df = pd.DataFrame(fetch.get_historical_inventory()).set_index("Dates")
 # Commodity related stock sector data
-stock_data = stock.get_stock_sector_index(start,end,True,{},[],Relative_Switch)[[stock_name]]
-stock_data = stock_data.rename(columns={stock_name: stock_name+"_Stock"})
+industry_weights_dict = stock.industry_lookup(commodity_name)
+stock_data = stock.get_single_industry_index(start,end,True,industry_weights_dict,[],Relative_Switch).add_prefix('stock_')
+stock_name = list(stock_data.columns.values)
+stock_name.remove('stock_ShangHai_Index')
 # Currency data
 currency_data = pd.DataFrame(fetch.get_histroical_ccy(start,end)).set_index("Dates")
 currency_data = currency_data[["USD_Index","CNYUSD","JPYUSD","WTI"]]
@@ -64,19 +64,15 @@ currency_data = currency_data[["USD_Index","CNYUSD","JPYUSD","WTI"]]
 market = index_data[index_data["name"]==commodity_name][start:end]
 market["VOL/OPI"] = market["volume"]/market["opi"]
 market["mid_price"] = 0.5*(market["open"]+market["close"])
-market = market[["mid_price","opi","volume","r1","VOL/OPI"]]
+market = market[["mid_price","opi","volume","r1","r2","VOL/OPI"]]
 # Get inventory data
 inventory = inv_df.loc[inv_df["Product"].str.upper()==commodity_name][start:end]["INV"]
-market = market.join(bond_index["bond_price"],how="left").fillna(method="bfill")
-market = market.join(inventory,how="left").fillna(method="ffill")
-market = market.join(stock_data,how="left").fillna(method="bfill")
-market = market.join(currency_data,how="left").fillna(method="ffill")
-# Probability of upside frequency
-P_matrix = rep_helper.cal_stat_analyze(market,stock_name)
-print(P_matrix)
-responce_start = end-dt.timedelta(days = 90)
-responce_tb = rep_helper.cal_responce_tb(market,stock_name,responce_start)
-print(responce_tb)
+market = market.join(bond_index["bond_price"],how="left")
+market = market.join(inventory,how="left")
+market = market.join(stock_data,how="left")
+market = market.join(currency_data,how="left")
+market = market.fillna(method="ffill")
+market = market.fillna(method="bfill")
 
 fig = rep_helper.single_stock_analyze(commodity_name, stock_name, market, N)
 
@@ -84,10 +80,6 @@ fig = rep_helper.single_stock_analyze(commodity_name, stock_name, market, N)
 if Save_df:
     writer = pd.ExcelWriter(commodity_name+'_Data.xlsx',engine='xlsxwriter')
     workbook = writer.book
-    worksheet = workbook.add_worksheet('Probability')
-    writer.sheets['Probability'] = worksheet
-    P_matrix.to_excel(writer,sheet_name='Probability',startrow=0 , startcol=0)
-    
     worksheet = workbook.add_worksheet(commodity_name+"_Market")
     writer.sheets[commodity_name+"_Market"] = worksheet
     market.to_excel(writer,sheet_name=commodity_name+"_Market",startrow=0 , startcol=0)

@@ -87,7 +87,57 @@ product_weights_dict= {
                     [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]],
         "Shanghai":[["000001.SS"],
                     [1]],
+                    
         }
+
+def industry_lookup(commodity_name):
+    from stock_currency import product_dict as p_d
+    if commodity_name.upper() in ("AU","AG"):
+        return p_d.GOLD
+    elif commodity_name.upper() == "CU":
+        return p_d.COPPER
+    elif commodity_name.upper() == "AL":
+        return p_d.ALUMINUM
+    elif commodity_name.upper() == "ZN":
+        return p_d.ZINC
+    elif commodity_name.upper() == "NI":
+        return p_d.NI
+    elif commodity_name.upper() == "PB":
+        return p_d.PB
+    elif commodity_name.upper() == "SN":
+        return p_d.SN
+    elif commodity_name.upper() in ("ZC","J","JM"):
+        return p_d.COAL
+    elif commodity_name.upper() in ("I","RB","HC"):
+        return p_d.STEEL
+    elif commodity_name.upper() == "FG":
+        return p_d.GLASS
+    elif commodity_name.upper() == "TA":
+        return p_d.PTA
+    elif commodity_name.upper() == "PVC":
+        return p_d.PVC
+    elif commodity_name.upper() == "PP":
+        return p_d.PP
+    elif commodity_name.upper() == "PE":
+        return p_d.PE
+    elif commodity_name.upper() == "RU":
+        return p_d.RUBBER
+    elif commodity_name.upper() == "MA":
+        return p_d.MA
+    elif commodity_name.upper() == "BU":
+        return p_d.BU
+    elif commodity_name.upper() in ("M","RM"):
+        return p_d.MEAL
+    elif commodity_name.upper() in ("Y","OI","P"):
+        return p_d.FOOD_OIL
+    elif commodity_name.upper() == "SR":
+        return p_d.SUGAR
+    elif commodity_name.upper() == "CF":
+        return p_d.COTTON
+    else:
+        return p_d.SH_Index
+        
+    return 
 
 def cal_index( sector_name,
                Token,Token_weights,
@@ -114,9 +164,31 @@ def get_stock_sector_index( start_t, end_t, normal=True,
         c_close = c_close.fillna(method = "backfill")
         c_close = c_close.sort_index()
         ans[key] = c_close.apply(weighted,args=(val[0],val[1]),axis=1)
+    ans = ans.dropna(how = "any")
     if len(sector_weights_dict) > 0:
         for key,val in sector_weights_dict.items():
             ans[key] = ans.apply(weighted,args=(val[0],val[1]),axis=1)
+    if normal:
+        ans = ans.divide(ans.iloc[0] / 100)
+    if relative:
+        temp = ans[ans.columns.difference(['Shanghai'])].div(ans["Shanghai"], axis=0)
+        temp["Shanghai"] = ans["Shanghai"]
+        ans = temp
+    if len(col_order) > 0:    
+        ans = ans.sort_index(ascending=False)[col_order]
+    return ans
+
+def get_single_industry_index( start_t, end_t, normal=True,
+                               industry_weights_dict={},col_order=[],
+                               relative = True):
+    def weighted(x, cols, w ):
+        return np.average(x[cols], weights=w, axis=0)
+    ans = pd.DataFrame()
+    for key,val in industry_weights_dict.items():
+        c_close = data.get_data_yahoo(symbols=val[0], start=start_t, end=end_t)['Adj Close']
+        c_close = c_close.fillna(method = "backfill")
+        c_close = c_close.sort_index()
+        ans[key] = c_close.apply(weighted,args=(val[0],val[1]),axis=1)
     if normal:
         ans = ans.divide(ans.iloc[0] / 100)
     if relative:

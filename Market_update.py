@@ -15,15 +15,7 @@ import Inventory.inventory_SH as Inv_SH
 import Inventory.inventory_ZZ as Inv_ZZ
 import DB.fetch as fetch
 import datetime as dt
-""" All products name listed below:
-product_name = ["AG","AU",
-                "CU","AL","ZN","PB","NI","SN",
-                "ZC","JM","J","I","RB","HC","FG",
-                "TA","PVC","PP","PE","RU","BU","MA",
-                "A","M","RM","Y","OI","P","SR","CF","JD","CS","C",
-                "IC","IF","IH","T","TF","TS",
-                ]
-"""
+
 product_name = ["ag","au","cu","al","zn","pb","ni","sn",
                 "ZC","jm","j","i","rb","hc","FG",
                 "sc","TA","pvc","pp","pe","ru","bu","MA","eg","SA",
@@ -35,7 +27,7 @@ cur_date = dt.datetime.today()
 sdate = cur_date - dt.timedelta(days=N)
 """ Fetch currency information
 """
-fetch.update_ccy_price(fetch.get_ccy_price(sdate,cur_date))
+fetch.update_ccy_price(fetch.get_ccy_price(cur_date- dt.timedelta(days=14),cur_date))
 
 """ Update market information
 """
