@@ -47,6 +47,18 @@ def get_single_name_index(data, name):
 def get_cor_skew_df( data, stock_data=[], name_li = [] ):
     # Need stock data as inputs gets from stock analyzer
     from collections import OrderedDict
+    name_li = [ ['AG','AU'],['AU','AU'],
+            ['CU','CU'], ['AL','AL'], ['ZN','ZN'],['PB','PB'],['NI','NI'],['SN','SN'],
+            ['ZC','COAL'],['JM','COAL'],['J','COKE'],
+            ['I','I'],['RB','REBAR'],['HC','COLS'],['FG','FG'],
+            ['TA','PTA'], ['PVC','PVC'], ['PP','PP'], ['PE','PE'], 
+            ['RU','RU'],['BU','BU'],['MA','MA'], 
+            ['A','Shanghai'],['M','MEAL'],['RM','MEAL'],
+            ['Y','FOOD_OIL'],['OI','FOOD_OIL'],['P','FOOD_OIL'],
+            ['SR','SUGAR'],['CF','COTTON'],['JD','Shanghai'],['CS','Shanghai'],['C','Shanghai'],
+            ['IC','Shanghai'],['IF','Shanghai'], ['IH','Shanghai'],
+            ['T','DIVIDENS'], ['TF','DIVIDENS'],['TS','DIVIDENS'],
+            ]
     N = 52
     stock_df = stock_data.sort_index().asfreq(freq='W-Fri', how='start', method='ffill').pct_change()
     answer = OrderedDict()
