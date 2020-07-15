@@ -7,7 +7,8 @@ Created on Fri Sep 27 12:06:21 2019
 """
 import os
 import pandas as pd
-import Market.MKT_Helper as helper
+from sector_weights import set_sector_weights as set_sector_weights
+from cal_weighted_average import wavg
 class MKT_Manager:
     """ Market manager: collect market data
         generate market index and key market 
@@ -16,46 +17,6 @@ class MKT_Manager:
     def __init__(self):
         self.cur_path = os.path.dirname(os.path.abspath(__file__))
         self.parent_path = os.path.dirname(self.cur_path)
-        
-    def gen_market_index(self, start, end,
-                         df = []):
-        """ Compute weekly market index
-            Output Commodity_Sector file in parent folder
-        """
-        # Return current time market panel information 
-        panel = df.loc[df["Dates"]==max(df["Dates"])][["Dates","Code","Open","High","Low","Close","OPI","Vol"]]
-        # Return market index price overtime
-        sector_weight = helper.get_sector_weights()
-        sector_overview = pd.DataFrame()
-        for blcok in sector_weight:
-            ans = pd.DataFrame()
-            sector = blcok[0]
-            for ss in sector:
-                i_str = ss+"\d+"
-                temp = df.loc[(df["Code"].str.match(i_str))&(df["Code"].str.len()<10)]
-                temp = temp.groupby("Dates").apply(helper.wavg, "Close", "OPI")
-                temp = temp.reset_index()
-                mask = (temp["Dates"]>=start) & (temp["Dates"]<=end)
-                temp = temp.loc[mask]
-                temp = temp.rename(columns = {0:ss})
-                temp[ss] = temp[ss]/temp[ss].iloc[0]
-                temp = temp.set_index('Dates')
-                ans = ans.join( temp,
-                                how = "outer")
-                ans = ans.fillna(method='backfill')
-            sector_overview = sector_overview.join( ans, how = "outer")
-            i = 0
-            for nn in blcok[0]:
-                ans[nn] = ans[nn]*blcok[2][i]
-                i = i+1
-            sector_overview[blcok[1]] = ans.sum(axis = 1)
-        sector_overview = sector_overview.fillna(method="backfill")
-        # Reorder columns
-        cols = sector_overview.columns.tolist()
-        index_cols = ["Metal","Black_Cons","Chemistry","Agriculture","Stock","Bond"]
-        prod_cols  = [x for x in cols if x not in index_cols]
-        sector_overview = sector_overview[index_cols+prod_cols]
-        return sector_overview, panel, index_cols+prod_cols
     
     def gen_market_index_v2( self, start, end,
                              data_index, data_panel ):
@@ -65,7 +26,7 @@ class MKT_Manager:
         panel = data_panel[["Dates","Code","Open","High","Low","Close","OPI","Vol"]]
         data_index = data_index[(data_index.index>=start) & (data_index.index<=end)]
         # Return market index price overtime
-        sector_weight = helper.get_sector_weights()
+        sector_weight = set_sector_weights()
         sector_overview = pd.DataFrame()
         for block in sector_weight:
             ans = pd.DataFrame()
@@ -93,7 +54,7 @@ class MKT_Manager:
         # Generate raw price index for all datapint
          # Return current time market panel information 
         # Return market index price overtime
-        sector_weight = helper.get_sector_weights()
+        sector_weight = set_sector_weights()
         sector_overview = pd.DataFrame()
         for blcok in sector_weight:
             ans = pd.DataFrame()
@@ -101,7 +62,7 @@ class MKT_Manager:
             for ss in sector:
                 i_str = ss+"\d+"
                 temp = df.loc[(df["Code"].str.match(i_str))&(df["Code"].str.len()<10)]
-                temp = temp.groupby("Dates").apply(helper.wavg, "Close", "OPI")
+                temp = temp.groupby("Dates").apply(wavg, "Close", "OPI")
                 temp = temp.rename(ss)
                 ans = ans.join( temp, how = "outer").fillna(method='backfill')
             sector_overview = sector_overview.join( ans, how = "outer")
@@ -117,23 +78,3 @@ class MKT_Manager:
         prod_cols  = [x for x in cols if x not in index_cols]
         sector_overview = sector_overview[index_cols+prod_cols]
         return sector_overview, index_cols+prod_cols
-    
-    def upload_commodity_index( self, 
-                                data,
-                                start, end ):
-        import DB.fetch as fetch
-        # Uploading commodity single name index table
-        # Start Uploading commodity index table
-        product_name = ["ag","au","cu","al","zn","pb","ni","sn",
-                        "ZC","jm","j","i","rb","hc","FG",
-                        "TA","pvc","pp","pe","ru","bu","MA",
-                        "a","m","RM","y","OI","p","SR","CF","jd","cs","c",
-                        "IC","IF","IH","T","TF","TS",
-                        ]
-        columns_name = ["Product","Close","Open","High","Low","Vol","OPI"]
-        for sector in product_name:
-            temp = helper.get_commodity_index(data,sector)
-            temp["Product"] = sector.upper()
-            temp = temp[columns_name]
-            fetch.update_commodity_index(temp)
-    
